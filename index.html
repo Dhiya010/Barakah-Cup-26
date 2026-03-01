@@ -3,165 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barakah Cup '26 | Live Toernooi</title>
+    <title>Barakah Cup '26 | Live Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .active-btn { background-color: #15803d !important; color: white !important; }
+        .active-btn { background-color: #166534 !important; color: white !important; transform: scale(1.05); }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-slate-50 text-slate-900">
 
-    <header class="bg-green-800 text-white py-8 px-4 text-center shadow-md">
-        <h1 class="text-4xl font-extrabold tracking-tighter italic">BARAKAH CUP '26</h1>
-        <p class="mt-2 text-green-100 opacity-90">Officiële Live-site voor Programma & Standen</p>
+    <header class="bg-green-900 text-white py-10 px-4 text-center shadow-xl border-b-4 border-green-700">
+        <h1 class="text-5xl font-black tracking-tighter italic uppercase underline decoration-green-500">BARAKAH CUP '26</h1>
+        <p class="mt-3 text-green-300 text-sm font-bold tracking-[0.2em] uppercase">Live Toernooi Update</p>
     </header>
 
-    <nav class="sticky top-0 bg-white shadow-sm z-50 overflow-x-auto">
-        <div class="flex justify-center space-x-2 p-3 min-w-max">
-            <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-6 py-2 rounded-full border border-green-700 text-green-800 font-bold transition">Programma</button>
-            <button id="btn-standen" onclick="openTab('standen')" class="px-6 py-2 rounded-full border border-green-700 text-green-800 font-bold transition">Standen</button>
-            <button id="btn-regels" onclick="openTab('regels')" class="px-6 py-2 rounded-full border border-green-700 text-green-800 font-bold transition">Regels</button>
+    <nav class="sticky top-0 bg-white/80 backdrop-blur-md shadow-lg z-50 border-b border-slate-200">
+        <div class="flex justify-center space-x-3 p-4">
+            <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-6 py-2 rounded-xl border border-green-800 text-green-900 font-black text-xs uppercase transition-all duration-200 shadow-sm">Programma</button>
+            <button id="btn-standen" onclick="openTab('standen')" class="px-6 py-2 rounded-xl border border-green-800 text-green-900 font-black text-xs uppercase transition-all duration-200 shadow-sm">Standen</button>
+            <button id="btn-regels" onclick="openTab('regels')" class="px-6 py-2 rounded-xl border border-green-800 text-green-900 font-black text-xs uppercase transition-all duration-200 shadow-sm">Regels</button>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto p-4 pb-20">
+    <main class="max-w-2xl mx-auto p-4 pb-24">
 
-        <section id="schema" class="tab-content active">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold">Wedstrijdschema</h2>
-                <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded animate-pulse">Live Update</span>
+        <section id="schema" class="tab-content active space-y-4">
+            <div id="loading" class="text-center py-20">
+                <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-700 border-r-transparent align-[-0.125em]"></div>
+                <p class="mt-4 font-bold text-slate-400 uppercase text-xs tracking-widest">Data ophalen uit Sheets...</p>
             </div>
-            <div id="loading-schema" class="text-center py-10">Laden van programma...</div>
-            <div id="schema-container" class="space-y-3">
-                </div>
+            <div id="schema-container" class="space-y-4"></div>
         </section>
 
-        <section id="standen" class="tab-content">
-            <h2 class="text-2xl font-bold mb-4">Groepsstanden</h2>
-            <div id="standen-container" class="space-y-6">
-                </div>
+        <section id="standen" class="tab-content space-y-8">
+            <div id="standen-container" class="space-y-8"></div>
         </section>
 
         <section id="regels" class="tab-content">
-            <h2 class="text-2xl font-bold mb-4">Toernooi Reglement</h2>
-            <div class="bg-white p-6 rounded-2xl shadow-sm prose">
-                <ul class="list-disc pl-5 space-y-2 text-gray-700">
-                    <li><strong>Speeltijd:</strong> 1x 15 minuten zonder wisselen van helft.</li>
-                    <li><strong>Puntentelling:</strong> Winst = 3 pnt, Gelijk = 1 pnt, Verlies = 0 pnt.</li>
-                    <li><strong>Beslissing Poule:</strong> 1. Punten, 2. Doelsaldo, 3. Onderling resultaat.</li>
-                    <li><strong>Knock-out:</strong> Bij gelijkspel direct penalty's (3 per team).</li>
-                    <li>Houd het sportief: Respect voor de scheidsrechter en elkaar.</li>
-                </ul>
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
+                <h2 class="text-2xl font-black mb-6 uppercase italic text-green-900">Toernooi Regels</h2>
+                <div class="space-y-6 text-slate-600 font-medium">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-green-100 text-green-700 rounded-full p-2 font-bold text-xs">01</div>
+                        <p><strong class="text-slate-900">Speeltijd:</strong> 15 minuten per wedstrijd zonder rust.</p>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-green-100 text-green-700 rounded-full p-2 font-bold text-xs">02</div>
+                        <p><strong class="text-slate-900">Punten:</strong> Winst levert 3 punten op, gelijkspel 1 punt.</p>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-green-100 text-green-700 rounded-full p-2 font-bold text-xs">03</div>
+                        <p><strong class="text-slate-900">Gelijke stand:</strong> Er wordt gekeken naar 1. Doelsaldo, 2. Gescoorde doelpunten, 3. Onderling resultaat.</p>
+                    </div>
+                </div>
             </div>
         </section>
-
     </main>
 
     <script>
-    // 1. PLAK HIER JE NIEUWE LINK
-    const googleSheetLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?output=csv"; 
-    
-    // We gebruiken nu een andere proxy die vaak stabieler is
-    const csvUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(googleSheetLink);
+        // JOUW PERSOONLIJKE CSV LINK
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?output=csv";
+        const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(csvUrl);
 
-    async function fetchData() {
-        const loadingEl = document.getElementById('loading-schema');
-        const container = document.getElementById('schema-container');
+        async function fetchData() {
+            try {
+                const response = await fetch(proxy + "&t=" + Date.now());
+                const text = await response.text();
+                const rows = text.split('\n').filter(r => r.trim() !== '').map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
 
-        try {
-            // Voeg een 'cache-buster' toe zodat je altijd de nieuwste uitslagen ziet
-            const finalUrl = csvUrl + "&cache=" + new Date().getTime();
-            const response = await fetch(finalUrl);
-            
-            if (!response.ok) throw new Error('Google Sheet niet bereikbaar');
-            
-            const data = await response.text();
-            
-            if (data.includes("<!DOCTYPE html>") || data.length < 10) {
-                throw new Error("De link is geen CSV. Check 'Publiceren op internet'.");
+                // SCHEMA DATA (Kolom A bevat tijd met ':')
+                const schemaRows = rows.filter(r => r[0] && (r[0].includes(':') || r[1].trim() === "-"));
+                
+                // STANDEN DATA (Kolom L bevat Poule letter, L is index 11)
+                const standenRows = rows.filter(r => r[11] && ["A", "B", "C"].includes(r[11].trim()));
+
+                renderSchema(schemaRows);
+                renderStanden(standenRows);
+                document.getElementById('loading').style.display = 'none';
+            } catch (err) {
+                console.error("Fout bij laden:", err);
             }
+        }
 
-            const rows = data.split('\n').filter(row => row.trim() !== '').map(row => {
-                return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        function renderSchema(rows) {
+            const container = document.getElementById('schema-container');
+            container.innerHTML = '';
+            rows.forEach(cols => {
+                const [tijd, veld, type, teamA, teamB, sA, sB] = cols.map(c => c.replace(/"/g, '').trim());
+                
+                if (veld === "-") {
+                    container.innerHTML += `
+                        <div class="bg-amber-50 border-2 border-amber-100 p-5 rounded-3xl text-center shadow-sm">
+                            <span class="block text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Pauze / Gebed</span>
+                            <span class="text-lg font-black text-amber-900">${teamA}</span>
+                            <span class="block text-xs font-bold text-amber-400 mt-1">${tijd}</span>
+                        </div>`;
+                } else {
+                    container.innerHTML += `
+                        <div class="bg-white p-5 rounded-[2rem] shadow-md border border-slate-100">
+                            <div class="flex justify-between text-[10px] font-black text-slate-300 uppercase mb-3 tracking-tighter">
+                                <span>Veld ${veld} • ${type}</span>
+                                <span>${tijd}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="w-[40%] text-sm font-bold text-slate-700">${teamA}</span>
+                                <div class="w-[20%] bg-slate-900 text-white rounded-2xl py-2 text-center font-black shadow-inner text-sm">
+                                    ${sA || 0} - ${sB || 0}
+                                </div>
+                                <span class="w-[40%] text-right text-sm font-bold text-slate-700">${teamB}</span>
+                            </div>
+                        </div>`;
+                }
             });
-
-            renderSchema(rows);
-            loadingEl.style.display = 'none';
-        } catch (error) {
-            console.error("Fout:", error);
-            loadingEl.innerHTML = `<div class="bg-red-50 p-4 rounded-lg border border-red-200 text-red-600 text-sm font-bold">
-                ⚠️ Fout: ${error.message}<br>
-                <span class="font-normal">Klik in je Sheet op: Bestand > Delen > Publiceren op internet</span>
-            </div>`;
         }
-    }
 
-    function renderSchema(rows) {
-    const container = document.getElementById('schema-container');
-    container.innerHTML = '';
+        function renderStanden(rows) {
+            const container = document.getElementById('standen-container');
+            container.innerHTML = '';
+            ["A", "B", "C"].forEach(poule => {
+                const teams = rows.filter(r => r[11].trim() === poule);
+                if (teams.length === 0) return;
 
-    // Filter lege rijen eruit
-    const filteredRows = rows.slice(1).filter(row => row.length >= 2 && row[0].trim() !== "");
+                let html = `
+                    <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100">
+                        <div class="bg-green-900 text-white px-8 py-4 font-black italic uppercase text-sm tracking-widest">Poule ${poule}</div>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-[10px] font-black text-slate-400 uppercase italic">
+                                    <th class="px-6 py-4">Team</th>
+                                    <th class="px-4 py-4 text-center">G</th>
+                                    <th class="px-4 py-4 text-center">DS</th>
+                                    <th class="px-6 py-4 text-center text-slate-900">Pnt</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50">`;
 
-    if (filteredRows.length === 0) {
-        container.innerHTML = '<p class="text-center text-gray-500">Geen wedstrijden gevonden in de Sheet.</p>';
-        return;
-    }
+                teams.forEach(cols => {
+                    // Indexen op basis van Kolom L (11) t/m U (20)
+                    const team = cols[12];
+                    const g = cols[13];
+                    const ds = cols[19];
+                    const pnt = cols[20];
 
-    filteredRows.forEach(cols => {
-        // Zorg dat we geen fouten krijgen bij missende kolommen
-        const tijd = cols[0] ? cols[0].trim() : "??:??";
-        const veld = cols[1] ? cols[1].trim() : "?";
-        const type = cols[2] ? cols[2].trim() : "";
-        const teamA = cols[3] ? cols[3].trim() : "TBA";
-        const teamB = cols[4] ? cols[4].trim() : "TBA";
-        const scoreA = cols[5] ? cols[5].trim() : "";
-        const scoreB = cols[6] ? cols[6].trim() : "";
-
-        if (veld === "-") {
-            // Pauze weergave
-            container.innerHTML += `
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg shadow-sm flex justify-between items-center mb-3">
-                    <div>
-                        <span class="block text-[10px] uppercase font-bold text-yellow-600">Pauze / Info</span>
-                        <span class="text-lg font-semibold text-yellow-900">${teamA}</span>
-                    </div>
-                    <span class="text-sm font-mono font-bold">${tijd}</span>
-                </div>`;
-        } else {
-            // Wedstrijd weergave
-            container.innerHTML += `
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-3">
-                    <div class="flex justify-between text-[10px] text-gray-400 uppercase font-bold mb-2">
-                        <span>Veld ${veld} ${type ? '- ' + type : ''}</span>
-                        <span>${tijd}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="w-2/5 font-semibold text-sm">${teamA}</span>
-                        <div class="w-1/5 bg-gray-900 text-white rounded px-2 py-1 text-center font-bold mx-2">
-                            ${scoreA !== "" ? scoreA : '0'} - ${scoreB !== "" ? scoreB : '0'}
-                        </div>
-                        <span class="w-2/5 text-right font-semibold text-sm">${teamB}</span>
-                    </div>
-                </div>`;
+                    html += `
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-slate-800 text-sm">${team}</td>
+                            <td class="px-4 py-4 text-center text-slate-400 font-bold text-xs">${g}</td>
+                            <td class="px-4 py-4 text-center text-slate-400 font-bold text-xs">${ds}</td>
+                            <td class="px-6 py-4 text-center font-black text-green-700 bg-green-50/30 text-sm">${pnt}</td>
+                        </tr>`;
+                });
+                container.innerHTML += html + `</tbody></table></div>`;
+            });
         }
-    });
-}
-    function openTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-btn'));
-        document.getElementById(tabId).classList.add('active');
-        document.getElementById('btn-' + tabId).classList.add('active-btn');
-    }
 
-    setInterval(fetchData, 30000);
-    fetchData();
-</script>
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-btn'));
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('btn-' + tabId).classList.add('active-btn');
+            window.scrollTo(0, 0);
+        }
+
+        setInterval(fetchData, 30000);
+        fetchData();
+    </script>
 </body>
-
 </html>
-
-
-
