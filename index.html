@@ -3,47 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barakah Cup '26 | Live</title>
+    <title>Barakah Cup '26 | Live Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .active-btn { background-color: #14532d !important; color: white !important; }
+        .active-btn { background-color: #14532d !important; color: white !important; shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
     </style>
 </head>
 <body>
 
     <header class="bg-green-950 text-white py-10 text-center shadow-xl border-b-8 border-green-800">
         <h1 class="text-3xl font-black italic uppercase tracking-tighter">BARAKAH CUP '26</h1>
+        <p class="text-green-400 text-[10px] font-bold tracking-[0.3em] uppercase mt-2 opacity-80">Live Toernooi Updates</p>
     </header>
 
-    <nav class="sticky top-0 bg-white/90 backdrop-blur shadow-md z-50">
+    <nav class="sticky top-0 bg-white/95 backdrop-blur shadow-md z-50">
         <div class="flex justify-center space-x-2 p-4">
             <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-6 py-2 rounded-xl border-2 border-green-900 font-black text-[10px] uppercase transition-all">Programma</button>
             <button id="btn-standen" onclick="openTab('standen')" class="px-6 py-2 rounded-xl border-2 border-green-900 font-black text-[10px] uppercase transition-all">Standen</button>
         </div>
     </nav>
 
-    <main class="max-w-xl mx-auto p-4">
-        <div id="status-message" class="text-center py-10 font-bold text-slate-400 uppercase text-xs">Data laden...</div>
+    <main class="max-w-xl mx-auto p-4 pb-20">
+        <div id="status-message" class="text-center py-10 font-bold text-slate-400 uppercase text-xs animate-pulse">Data synchroniseren...</div>
         
         <section id="schema" class="tab-content active space-y-4"></section>
+        
         <section id="standen" class="tab-content space-y-8"></section>
     </main>
 
     <script>
-        // VERVANG DEZE LINKS MET DE NIEUWE LINKS UIT STAP 7
+        // De door jou opgegeven links
         const schemaCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=1773508172&single=true&output=csv";
         const standenCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=100335345&single=true&output=csv";
 
         async function fetchSource(url) {
             const response = await fetch(url + "&cache=" + Date.now());
-            // Als Google probeert te redirecten naar een inlogpagina, geeft fetch vaak een fout of een andere content-type
-            if (!response.ok || response.url.includes('ServiceLogin')) {
-                throw new Error('Link is niet openbaar. Publiceer de sheet opnieuw.');
-            }
+            if (!response.ok) throw new Error('Netwerkfout');
             return await response.text();
         }
 
@@ -60,7 +59,7 @@
                 document.getElementById('status-message').style.display = 'none';
             } catch (err) {
                 console.error(err);
-                document.getElementById('status-message').innerHTML = `<span class="text-red-600">⚠️ Fout: De link is niet openbaar.<br>Ga in Sheets naar Bestand > Delen > Publiceren op internet.</span>`;
+                document.getElementById('status-message').innerHTML = `<span class="text-red-600 italic">⚠️ Kan data niet laden. Controleer internet.</span>`;
             }
         }
 
@@ -73,20 +72,39 @@
         function renderSchema(rows) {
             const container = document.getElementById('schema');
             container.innerHTML = '';
-            const matches = rows.filter(r => r[0] && (r[0].includes(':') || r[1] === "-"));
+            
+            // Filter: Moet een tijd bevatten in kolom A
+            const matches = rows.filter(r => r[0] && r[0].includes(':'));
             
             matches.forEach(cols => {
-                const [tijd, veld, type, teamA, teamB, sA, sB] = cols;
-                if (veld === "-") {
-                    container.innerHTML += `<div class="bg-amber-400 p-4 rounded-2xl text-center font-black text-white shadow-md">${teamA} (${tijd})</div>`;
-                } else {
+                // Kolom A=Tijd, B=Veld, C=Type, D=TeamA, E=TeamB, F=ScoreA, G=ScoreB, H=PauzeCheck
+                const [tijd, veld, type, teamA, teamB, sA, sB, pauzeCheck] = cols;
+                
+                // Pauze-logica: Als kolom H (index 7) een streepje bevat
+                if (pauzeCheck === "-") {
                     container.innerHTML += `
-                        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
-                            <div class="flex justify-between text-[10px] font-black text-slate-400 mb-2 uppercase"><span>Veld ${veld}</span><span>${tijd}</span></div>
+                        <div class="bg-amber-100 border-2 border-amber-200 p-5 rounded-3xl text-center shadow-sm border-dashed">
+                            <span class="block text-[9px] font-black text-amber-600 uppercase tracking-widest mb-1 italic">Intermezzo</span>
+                            <span class="text-xl font-black text-amber-900 uppercase italic">${type}</span>
+                            <span class="block text-xs font-bold text-amber-500 mt-1">${tijd}</span>
+                        </div>`;
+                } else {
+                    // Score-logica: "-" tonen als de cel in Sheets leeg is
+                    const displayScoreA = (sA === "" || sA === undefined) ? "-" : sA;
+                    const displayScoreB = (sB === "" || sB === undefined) ? "-" : sB;
+
+                    container.innerHTML += `
+                        <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-200">
+                            <div class="flex justify-between text-[10px] font-black text-slate-400 mb-3 uppercase tracking-tight">
+                                <span>Veld ${veld} • ${type}</span>
+                                <span>${tijd}</span>
+                            </div>
                             <div class="flex justify-between items-center">
-                                <span class="w-[40%] text-xs font-black uppercase text-slate-700">${teamA}</span>
-                                <div class="bg-green-950 text-green-400 px-3 py-1 rounded-xl font-black text-sm">${sA || 0}:${sB || 0}</div>
-                                <span class="w-[40%] text-right text-xs font-black uppercase text-slate-700">${teamB}</span>
+                                <span class="w-[38%] text-xs font-black uppercase text-slate-800 leading-tight">${teamA}</span>
+                                <div class="bg-green-950 text-green-400 px-4 py-2 rounded-2xl font-black text-sm shadow-inner min-w-[70px] text-center">
+                                    ${displayScoreA} : ${displayScoreB}
+                                </div>
+                                <span class="w-[38%] text-right text-xs font-black uppercase text-slate-800 leading-tight">${teamB}</span>
                             </div>
                         </div>`;
                 }
@@ -98,20 +116,30 @@
             container.innerHTML = '';
             
             ["A", "B", "C"].forEach(poule => {
-                // Sorteer-tabel begint bij kolom L (index 11)
+                // Sorteer-tabel (L t/m U), L is index 11
                 const teams = rows.filter(r => r[11] === poule);
                 if (teams.length === 0) return;
 
-                let html = `<div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
-                    <div class="bg-green-900 text-white px-6 py-3 font-black italic uppercase text-xs">Poule ${poule}</div>
-                    <table class="w-full text-left font-bold text-xs"><thead class="bg-slate-50 text-[9px] uppercase text-slate-400"><tr><th class="p-4">Team</th><th class="p-4 text-center">G</th><th class="p-4 text-center text-green-900">Pnt</th></tr></thead><tbody>`;
+                let html = `
+                    <div class="bg-white rounded-[2rem] shadow-lg overflow-hidden border border-slate-200">
+                        <div class="bg-green-900 text-white px-6 py-4 font-black italic uppercase text-xs tracking-widest">Poule ${poule}</div>
+                        <table class="w-full text-left font-bold text-xs italic">
+                            <thead class="bg-slate-50 text-[9px] uppercase text-slate-400 tracking-tighter">
+                                <tr>
+                                    <th class="p-4 uppercase">Team</th>
+                                    <th class="p-4 text-center">G</th>
+                                    <th class="p-4 text-center text-green-950">Pnt</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">`;
                 
                 teams.forEach(r => {
-                    html += `<tr class="border-t border-slate-100">
-                        <td class="p-4 uppercase text-slate-700">${r[12]}</td>
-                        <td class="p-4 text-center text-slate-400">${r[13]}</td>
-                        <td class="p-4 text-center font-black text-green-700 bg-green-50">${r[20]}</td>
-                    </tr>`;
+                    html += `
+                        <tr class="hover:bg-green-50/50 transition-colors">
+                            <td class="p-4 uppercase text-slate-700 font-black">${r[12]}</td>
+                            <td class="p-4 text-center text-slate-400">${r[13]}</td>
+                            <td class="p-4 text-center font-black text-green-800 bg-green-50/50">${r[20]}</td>
+                        </tr>`;
                 });
                 container.innerHTML += html + `</tbody></table></div>`;
             });
@@ -122,10 +150,11 @@
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-btn'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-' + id).classList.add('active-btn');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         fetchData();
-        setInterval(fetchData, 30000);
+        setInterval(fetchData, 30000); // Elke 30 sec verversen
     </script>
 </body>
 </html>
