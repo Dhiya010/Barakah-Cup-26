@@ -60,29 +60,30 @@
     </main>
 
     <script>
-    // 1. PLAK HIER JE LINK
+    // 1. PLAK HIER JE NIEUWE LINK
     const googleSheetLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?output=csv"; 
     
-    // 2. Gebruik een proxy om blokkades te voorkomen
-    const csvUrl = "https://corsproxy.io/?" + encodeURIComponent(googleSheetLink);
+    // We gebruiken nu een andere proxy die vaak stabieler is
+    const csvUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(googleSheetLink);
 
     async function fetchData() {
         const loadingEl = document.getElementById('loading-schema');
         const container = document.getElementById('schema-container');
 
         try {
-            const response = await fetch(csvUrl);
-            if (!response.ok) throw new Error('Sheet niet gevonden (404)');
+            // Voeg een 'cache-buster' toe zodat je altijd de nieuwste uitslagen ziet
+            const finalUrl = csvUrl + "&cache=" + new Date().getTime();
+            const response = await fetch(finalUrl);
+            
+            if (!response.ok) throw new Error('Google Sheet niet bereikbaar');
             
             const data = await response.text();
             
-            // Controleer of we wel echt CSV data krijgen en geen HTML (foutpagina)
-            if (data.includes("<!DOCTYPE html>")) {
-                throw new Error("Link is niet gepubliceerd als CSV.");
+            if (data.includes("<!DOCTYPE html>") || data.length < 10) {
+                throw new Error("De link is geen CSV. Check 'Publiceren op internet'.");
             }
 
-            const rows = data.split('\n').map(row => {
-                // Deze regex splitst op komma's maar negeert komma's tussen aanhalingstekens
+            const rows = data.split('\n').filter(row => row.trim() !== '').map(row => {
                 return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             });
 
@@ -90,7 +91,10 @@
             loadingEl.style.display = 'none';
         } catch (error) {
             console.error("Fout:", error);
-            loadingEl.innerHTML = `<span class="text-red-500 font-bold">⚠️ Fout: ${error.message}<br><small>Check of de Sheet is gepubliceerd als CSV.</small></span>`;
+            loadingEl.innerHTML = `<div class="bg-red-50 p-4 rounded-lg border border-red-200 text-red-600 text-sm font-bold">
+                ⚠️ Fout: ${error.message}<br>
+                <span class="font-normal">Klik in je Sheet op: Bestand > Delen > Publiceren op internet</span>
+            </div>`;
         }
     }
 
@@ -147,4 +151,5 @@
 </body>
 
 </html>
+
 
