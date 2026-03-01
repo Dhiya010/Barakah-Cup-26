@@ -59,28 +59,38 @@
         const googleSheetLink = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?output=csv";
 
         async function fetchData() {
-            try {
-                // Directe fetch zonder proxy om CORS-fouten te vermijden
-                const response = await fetch(googleSheetLink + "&cache=" + Date.now());
-                if (!response.ok) throw new Error('Kon geen verbinding maken');
-                
-                const text = await response.text();
-                const rows = text.split('\n').filter(r => r.trim() !== '').map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
+    const loadingEl = document.getElementById('loading');
+    try {
+        const response = await fetch(googleSheetLink + "&cache=" + Date.now());
+        if (!response.ok) throw new Error('Google Sheet niet bereikbaar');
+        
+        const text = await response.text();
+        const rows = text.split('\n').filter(r => r.trim() !== '').map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
 
-                // SCHEMA (Filter op tijd in kolom A of pauze in veld-kolom B)
-                const schemaRows = rows.filter(r => r[0] && (r[0].includes(':') || r[1].trim() === "-"));
-                
-                // STANDEN (Filter op Poule A, B of C in de SORTEER-kolom L = index 11)
-                const standenRows = rows.filter(r => r[11] && ["A", "B", "C"].includes(r[11].trim()));
+        // DIT IS DE DIAGNOSE:
+        console.log("Aantal rijen ontvangen:", rows.length);
+        console.log("Eerste rij data:", rows[0]);
 
-                renderSchema(schemaRows);
-                renderStanden(standenRows);
-                document.getElementById('loading').style.display = 'none';
-            } catch (err) {
-                console.error("Fetch Error:", err);
-                document.getElementById('loading').innerHTML = `<p class="text-red-500 font-black uppercase text-xs">⚠️ Fout bij laden: Check internetverbinding</p>`;
-            }
+        // Controleer Schema
+        const schemaRows = rows.filter(r => r[0] && (r[0].includes(':') || r[1].trim() === "-"));
+        console.log("Matches voor Schema:", schemaRows.length);
+
+        // Controleer Standen (Kolom L = index 11)
+        const standenRows = rows.filter(r => r[11] && ["A", "B", "C"].includes(r[11].trim()));
+        console.log("Matches voor Standen:", standenRows.length);
+
+        if (schemaRows.length === 0 && standenRows.length === 0) {
+            loadingEl.innerHTML = `<p class="text-orange-500 font-bold uppercase text-[10px]">⚠️ Verbonden, maar geen data herkend.<br>Check of 'Schema' en 'Standen' op hetzelfde blad staan.</p>`;
+        } else {
+            renderSchema(schemaRows);
+            renderStanden(standenRows);
+            loadingEl.style.display = 'none';
         }
+    } catch (err) {
+        console.error("Fetch Error:", err);
+        loadingEl.innerHTML = `<p class="text-red-500 font-black uppercase text-[10px]">⚠️ Error: ${err.message}</p>`;
+    }
+}
 
         function renderSchema(rows) {
             const container = document.getElementById('schema-container');
@@ -167,3 +177,4 @@
     </script>
 </body>
 </html>
+
