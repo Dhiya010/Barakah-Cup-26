@@ -11,6 +11,7 @@
         :root {
             --barakah-purple: #4a244d; 
             --barakah-gold: #c5a367;   
+            --barakah-green: #22c55e;
         }
 
         body { 
@@ -37,7 +38,6 @@
         .social-btn { transition: transform 0.2s ease; }
         .social-btn:active { transform: scale(0.9); }
         
-        /* Custom list style voor info */
         .info-card li { position: relative; padding-left: 1.5rem; margin-bottom: 0.75rem; }
         .info-card li::before { content: "•"; position: absolute; left: 0; color: var(--barakah-gold); font-weight: bold; }
     </style>
@@ -77,6 +77,12 @@
         <section id="standen" class="tab-content space-y-8"></section>
 
         <section id="info" class="tab-content space-y-6">
+            <div class="bg-white p-4 rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
+                <h2 class="text-xl font-black italic uppercase gold-text mb-4 px-2 tracking-tighter text-center">Locatie Plattegrond</h2>
+                <img src="plattegrond.png" alt="Plattegrond Barakah Cup" class="w-full h-auto rounded-3xl border-2 gold-border shadow-inner">
+                <p class="text-center text-[10px] font-bold text-slate-400 mt-4 uppercase italic">Tik op de afbeelding om in te zoomen</p>
+            </div>
+
             <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 info-card">
                 <h2 class="text-xl font-black italic uppercase gold-text mb-4 tracking-tighter">Wedstrijdreglement</h2>
                 <ul class="text-[13px] font-bold text-slate-600 leading-relaxed">
@@ -97,7 +103,7 @@
                 <div class="space-y-4 text-[13px] font-bold text-slate-600 leading-relaxed">
                     <p>Scores worden direct na de wedstrijd online en op het algemene scorebord verwerkt.</p>
                     <p>Er zijn 4 kleedkamers beschikbaar. We zullen deze delen met andere teams om inshaAllah onze broederschapsbanden te versterken.</p>
-                    <p class="bg-amber-50 p-4 rounded-2xl border border-amber-100 text-amber-800">
+                    <p class="bg-amber-50 p-4 rounded-2xl border border-amber-100 text-amber-800 italic">
                         <strong>Let op:</strong> Kleedkamers worden niet afgesloten. Neem waardevolle spullen mee of laat ze niet onbeheerd achter in auto's.
                     </p>
                     <p>Het meenemen van eigen gebedskleden is aangeraden.</p>
@@ -142,12 +148,7 @@
                 const [tijd, veld, type, teamA, teamB, sA, sB, pauzeCheck] = cols;
                 
                 if (pauzeCheck === "-") {
-                    html += `
-                        <div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border">
-                            <span class="block text-[9px] font-black gold-text uppercase tracking-[0.3em] mb-1 italic">Intermezzo</span>
-                            <span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span>
-                            <span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span>
-                        </div>`;
+                    html += `<div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border"><span class="block text-[9px] font-black gold-text uppercase tracking-[0.3em] mb-1 italic">Intermezzo</span><span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span><span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span></div>`;
                 } else {
                     const displayScoreA = (sA === "" || sA === undefined) ? "-" : sA;
                     const displayScoreB = (sB === "" || sB === undefined) ? "-" : sB;
@@ -162,11 +163,11 @@
                                 </span>
                             </div>
                             <div class="flex justify-between items-center px-2">
-                                <span class="w-[38%] text-[13px] font-black uppercase text-[#4a244d] leading-tight italic">${teamA}</span>
+                                <span class="w-[38%] text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamA}</span>
                                 <div class="bg-[#4a244d] text-[#c5a367] px-4 py-2 rounded-2xl font-black text-lg shadow-xl border-b-2 border-[#c5a367]/30 min-w-[75px] text-center">
                                     ${displayScoreA}<span class="mx-1 opacity-30 text-white">:</span>${displayScoreB}
                                 </div>
-                                <span class="w-[38%] text-right text-[13px] font-black uppercase text-[#4a244d] leading-tight italic">${teamB}</span>
+                                <span class="w-[38%] text-right text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamB}</span>
                             </div>
                         </div>`;
                 }
@@ -202,4 +203,3 @@
     </script>
 </body>
 </html>
-
