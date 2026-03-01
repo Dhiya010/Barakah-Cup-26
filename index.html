@@ -7,57 +7,60 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .active-btn { background-color: #14532d !important; color: white !important; }
     </style>
 </head>
-<body class="bg-slate-100">
+<body>
 
     <header class="bg-green-950 text-white py-10 text-center shadow-xl border-b-8 border-green-800">
-        <h1 class="text-4xl font-black italic uppercase underline decoration-green-500 underline-offset-8">BARAKAH CUP '26</h1>
+        <h1 class="text-3xl font-black italic uppercase tracking-tighter">BARAKAH CUP '26</h1>
     </header>
 
-    <nav class="sticky top-0 bg-white/90 backdrop-blur shadow-lg z-50">
+    <nav class="sticky top-0 bg-white/90 backdrop-blur shadow-md z-50">
         <div class="flex justify-center space-x-2 p-4">
-            <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-6 py-2 rounded-xl border-2 border-green-900 font-black text-[10px] uppercase">Programma</button>
-            <button id="btn-standen" onclick="openTab('standen')" class="px-6 py-2 rounded-xl border-2 border-green-900 font-black text-[10px] uppercase">Standen</button>
+            <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-6 py-2 rounded-xl border-2 border-green-900 font-black text-[10px] uppercase transition-all">Programma</button>
+            <button id="btn-standen" onclick="openTab('standen')" class="px-6 py-2 rounded-xl border-2 border-green-900 font-black text-[10px] uppercase transition-all">Standen</button>
         </div>
     </nav>
 
     <main class="max-w-xl mx-auto p-4">
-        <div id="loading" class="text-center py-10 font-bold text-slate-400 animate-pulse uppercase text-xs">Data wordt geladen...</div>
+        <div id="status-message" class="text-center py-10 font-bold text-slate-400 uppercase text-xs">Data laden...</div>
         
         <section id="schema" class="tab-content active space-y-4"></section>
         <section id="standen" class="tab-content space-y-8"></section>
     </main>
 
     <script>
-        // PLAK HIER JE TWEE LINKS:
+        // VERVANG DEZE LINKS MET DE NIEUWE LINKS UIT STAP 7
         const schemaCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=1773508172&single=true&output=csv";
         const standenCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=100335345&single=true&output=csv";
 
+        async function fetchSource(url) {
+            const response = await fetch(url + "&cache=" + Date.now());
+            // Als Google probeert te redirecten naar een inlogpagina, geeft fetch vaak een fout of een andere content-type
+            if (!response.ok || response.url.includes('ServiceLogin')) {
+                throw new Error('Link is niet openbaar. Publiceer de sheet opnieuw.');
+            }
+            return await response.text();
+        }
+
         async function fetchData() {
             try {
-                // Laad beide bronnen tegelijkertijd
-                const [resSchema, resStanden] = await Promise.all([
-                    fetch(schemaCsvUrl + "&cache=" + Date.now()),
-                    fetch(standenCsvUrl + "&cache=" + Date.now())
+                const [textSchema, textStanden] = await Promise.all([
+                    fetchSource(schemaCsvUrl),
+                    fetchSource(standenCsvUrl)
                 ]);
 
-                const textSchema = await resSchema.text();
-                const textStanden = await resStanden.text();
-
-                const schemaRows = parseCSV(textSchema);
-                const standenRows = parseCSV(textStanden);
-
-                renderSchema(schemaRows);
-                renderStanden(standenRows);
+                renderSchema(parseCSV(textSchema));
+                renderStanden(parseCSV(textStanden));
                 
-                document.getElementById('loading').style.display = 'none';
+                document.getElementById('status-message').style.display = 'none';
             } catch (err) {
-                document.getElementById('loading').innerText = "Fout bij laden. Check de links.";
+                console.error(err);
+                document.getElementById('status-message').innerHTML = `<span class="text-red-600">⚠️ Fout: De link is niet openbaar.<br>Ga in Sheets naar Bestand > Delen > Publiceren op internet.</span>`;
             }
         }
 
@@ -70,21 +73,20 @@
         function renderSchema(rows) {
             const container = document.getElementById('schema');
             container.innerHTML = '';
-            // Filter: rij moet een tijd bevatten (:) of een pauze-teken (-)
             const matches = rows.filter(r => r[0] && (r[0].includes(':') || r[1] === "-"));
             
             matches.forEach(cols => {
                 const [tijd, veld, type, teamA, teamB, sA, sB] = cols;
                 if (veld === "-") {
-                    container.innerHTML += `<div class="bg-amber-400 p-4 rounded-3xl text-center font-black text-white shadow-lg">${teamA} (${tijd})</div>`;
+                    container.innerHTML += `<div class="bg-amber-400 p-4 rounded-2xl text-center font-black text-white shadow-md">${teamA} (${tijd})</div>`;
                 } else {
                     container.innerHTML += `
-                        <div class="bg-white p-5 rounded-[2rem] shadow-md border border-slate-200">
+                        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
                             <div class="flex justify-between text-[10px] font-black text-slate-400 mb-2 uppercase"><span>Veld ${veld}</span><span>${tijd}</span></div>
                             <div class="flex justify-between items-center">
-                                <span class="w-[40%] text-xs font-black uppercase">${teamA}</span>
-                                <div class="bg-slate-900 text-white px-3 py-1 rounded-xl font-black">${sA || 0}:${sB || 0}</div>
-                                <span class="w-[40%] text-right text-xs font-black uppercase">${teamB}</span>
+                                <span class="w-[40%] text-xs font-black uppercase text-slate-700">${teamA}</span>
+                                <div class="bg-green-950 text-green-400 px-3 py-1 rounded-xl font-black text-sm">${sA || 0}:${sB || 0}</div>
+                                <span class="w-[40%] text-right text-xs font-black uppercase text-slate-700">${teamB}</span>
                             </div>
                         </div>`;
                 }
@@ -95,18 +97,18 @@
             const container = document.getElementById('standen');
             container.innerHTML = '';
             
-            // We kijken nu specifiek naar de gesorteerde tabel vanaf kolom L (index 11)
             ["A", "B", "C"].forEach(poule => {
+                // Sorteer-tabel begint bij kolom L (index 11)
                 const teams = rows.filter(r => r[11] === poule);
                 if (teams.length === 0) return;
 
-                let html = `<div class="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-slate-200">
+                let html = `<div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
                     <div class="bg-green-900 text-white px-6 py-3 font-black italic uppercase text-xs">Poule ${poule}</div>
-                    <table class="w-full text-left"><thead class="bg-slate-50 text-[9px] font-black text-slate-400 uppercase"><tr><th class="p-4">Team</th><th class="p-4 text-center">G</th><th class="p-4 text-center text-slate-900 font-black text-xs">Pnt</th></tr></thead><tbody>`;
+                    <table class="w-full text-left font-bold text-xs"><thead class="bg-slate-50 text-[9px] uppercase text-slate-400"><tr><th class="p-4">Team</th><th class="p-4 text-center">G</th><th class="p-4 text-center text-green-900">Pnt</th></tr></thead><tbody>`;
                 
                 teams.forEach(r => {
-                    html += `<tr class="border-t border-slate-100 text-xs font-bold">
-                        <td class="p-4 uppercase">${r[12]}</td>
+                    html += `<tr class="border-t border-slate-100">
+                        <td class="p-4 uppercase text-slate-700">${r[12]}</td>
                         <td class="p-4 text-center text-slate-400">${r[13]}</td>
                         <td class="p-4 text-center font-black text-green-700 bg-green-50">${r[20]}</td>
                     </tr>`;
