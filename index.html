@@ -6,152 +6,168 @@
     <title>Barakah Cup '26 | Live Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        :root {
+            --barakah-purple: #4a244d; 
+            --barakah-gold: #c5a367;   
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #fcfaf7; 
+            color: var(--barakah-purple);
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .active-btn { background-color: #14532d !important; color: white !important; shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+
+        .active-btn { 
+            background-color: var(--barakah-purple) !important; 
+            color: var(--barakah-gold) !important; 
+            border-color: var(--barakah-gold) !important;
+            box-shadow: 0 4px 15px rgba(74, 36, 77, 0.3);
+        }
+
+        .gold-border { border-color: var(--barakah-gold); }
+        .purple-bg { background-color: var(--barakah-purple); }
+        .gold-text { color: var(--barakah-gold); }
+
+        /* Social knoppen animatie */
+        .social-btn { transition: transform 0.2s ease; }
+        .social-btn:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
 
-    <header class="bg-green-950 text-white py-10 text-center shadow-xl border-b-8 border-green-800">
-        <h1 class="text-3xl font-black italic uppercase tracking-tighter">BARAKAH CUP '26</h1>
-        <p class="text-green-400 text-[10px] font-bold tracking-[0.3em] uppercase mt-2 opacity-80">Live Toernooi Updates</p>
+    <header class="purple-bg text-white py-10 px-4 text-center border-b-4 gold-border shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+        
+        <div class="relative flex flex-col items-center">
+            <img src="logo.png" alt="Barakah Cup Logo" class="w-28 h-28 mb-4 object-contain drop-shadow-lg">
+            <h1 class="text-3xl font-black italic uppercase tracking-widest gold-text">BARAKAH CUP '26</h1>
+            
+            <div class="flex space-x-4 mt-6">
+                <a href="https://www.instagram.com/barakahcup/" target="_blank" class="social-btn bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] p-2.5 rounded-full border-2 gold-border shadow-lg">
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="https://www.tiktok.com/discover/svommoordclub-barakahcup" target="_blank" class="social-btn bg-black p-2.5 rounded-full border-2 gold-border shadow-lg">
+                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.9-.32-1.89-.23-2.74.25-.97.54-1.6 1.59-1.63 2.69-.03 1.17.59 2.32 1.61 2.87.8.43 1.7.49 2.54.2 1.12-.42 1.97-1.44 2.12-2.62.03-2.32.03-4.63.03-6.94V.02z"/></svg>
+                </a>
+            </div>
+        </div>
     </header>
 
-    <nav class="sticky top-0 bg-white/95 backdrop-blur shadow-md z-50">
-        <div class="flex justify-center space-x-2 p-4">
-            <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-6 py-2 rounded-xl border-2 border-green-900 font-black text-[10px] uppercase transition-all">Programma</button>
-            <button id="btn-standen" onclick="openTab('standen')" class="px-6 py-2 rounded-xl border-2 border-green-900 font-black text-[10px] uppercase transition-all">Standen</button>
+    <nav class="sticky top-0 bg-white/95 backdrop-blur-md shadow-lg z-50 border-b gold-border/20">
+        <div class="flex justify-center space-x-3 p-4">
+            <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-6 py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 font-black text-[10px] uppercase transition-all duration-300">Programma</button>
+            <button id="btn-standen" onclick="openTab('standen')" class="px-6 py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 font-black text-[10px] uppercase transition-all duration-300">Standen</button>
         </div>
     </nav>
 
-    <main class="max-w-xl mx-auto p-4 pb-20">
-        <div id="status-message" class="text-center py-10 font-bold text-slate-400 uppercase text-xs animate-pulse">Data synchroniseren...</div>
-        
+    <main class="max-w-xl mx-auto p-4 pb-24">
+        <div id="status-message" class="text-center py-10 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Update van Barakah Cup Cloud...</div>
         <section id="schema" class="tab-content active space-y-4"></section>
-        
         <section id="standen" class="tab-content space-y-8"></section>
     </main>
 
     <script>
-    const schemaCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=1773508172&single=true&output=csv";
-    const standenCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=100335345&single=true&output=csv";
+        const schemaCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=1773508172&single=true&output=csv";
+        const standenCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=100335345&single=true&output=csv";
 
-    async function fetchSource(url) {
-        // We voegen een extra lange unieke stempel toe om Google's cache te omzeilen
-        const cacheBuster = `&t=${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
-        const response = await fetch(url + cacheBuster);
-        if (!response.ok) throw new Error('Netwerkfout');
-        return await response.text();
-    }
-
-    async function fetchData() {
-        try {
-            const [textSchema, textStanden] = await Promise.all([
-                fetchSource(schemaCsvUrl),
-                fetchSource(standenCsvUrl)
-            ]);
-
-            renderSchema(parseCSV(textSchema));
-            renderStanden(parseCSV(textStanden));
-            
-            document.getElementById('status-message').style.display = 'none';
-        } catch (err) {
-            console.error(err);
-            // We tonen geen foutmelding bij een kleine hik, zodat de oude data blijft staan
+        async function fetchSource(url) {
+            const cacheBuster = `&t=${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
+            const response = await fetch(url + cacheBuster);
+            if (!response.ok) throw new Error('Netwerkfout');
+            return await response.text();
         }
-    }
 
-    function parseCSV(text) {
-        return text.split('\n')
-            .filter(r => r.trim() !== '')
-            .map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim()));
-    }
+        async function fetchData() {
+            try {
+                const [textSchema, textStanden] = await Promise.all([
+                    fetchSource(schemaCsvUrl),
+                    fetchSource(standenCsvUrl)
+                ]);
 
-    function renderSchema(rows) {
-        const container = document.getElementById('schema');
-        let html = '';
-        const matches = rows.filter(r => r[0] && r[0].includes(':'));
-        
-        matches.forEach(cols => {
-            const [tijd, veld, type, teamA, teamB, sA, sB, pauzeCheck] = cols;
+                renderSchema(parseCSV(textSchema));
+                renderStanden(parseCSV(textStanden));
+                document.getElementById('status-message').style.display = 'none';
+            } catch (err) { console.error(err); }
+        }
+
+        function parseCSV(text) {
+            return text.split('\n').filter(r => r.trim() !== '').map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/"/g, '').trim()));
+        }
+
+        function renderSchema(rows) {
+            const container = document.getElementById('schema');
+            let html = '';
+            const matches = rows.filter(r => r[0] && r[0].includes(':'));
             
-            if (pauzeCheck === "-") {
-                html += `
-                    <div class="bg-amber-100 border-2 border-amber-200 p-5 rounded-3xl text-center shadow-sm border-dashed">
-                        <span class="block text-[9px] font-black text-amber-600 uppercase tracking-widest mb-1 italic">Intermezzo</span>
-                        <span class="text-xl font-black text-amber-900 uppercase italic">${type}</span>
-                        <span class="block text-xs font-bold text-amber-500 mt-1">${tijd}</span>
-                    </div>`;
-            } else {
-                const displayScoreA = (sA === "" || sA === undefined) ? "-" : sA;
-                const displayScoreB = (sB === "" || sB === undefined) ? "-" : sB;
-
-                html += `
-                    <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-200">
-                        <div class="flex justify-between text-[10px] font-black text-slate-400 mb-3 uppercase tracking-tight">
-                            <span>Veld ${veld} • ${type}</span>
-                            <span>${tijd}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="w-[38%] text-xs font-black uppercase text-slate-800 leading-tight">${teamA}</span>
-                            <div class="bg-green-950 text-green-400 px-4 py-2 rounded-2xl font-black text-sm shadow-inner min-w-[70px] text-center">
-                                ${displayScoreA} : ${displayScoreB}
+            matches.forEach(cols => {
+                const [tijd, veld, type, teamA, teamB, sA, sB, pauzeCheck] = cols;
+                if (pauzeCheck === "-") {
+                    html += `
+                        <div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border">
+                            <span class="block text-[9px] font-black gold-text uppercase tracking-[0.3em] mb-1 italic">Intermezzo</span>
+                            <span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span>
+                            <span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span>
+                        </div>`;
+                } else {
+                    const displayScoreA = (sA === "" || sA === undefined) ? "-" : sA;
+                    const displayScoreB = (sB === "" || sB === undefined) ? "-" : sB;
+                    html += `
+                        <div class="bg-white p-5 rounded-[2.2rem] shadow-sm border-b-4 border-slate-200 border-x border-t border-slate-100">
+                            <div class="flex justify-between text-[10px] font-black text-slate-300 uppercase mb-4 tracking-widest">
+                                <span>Veld ${veld} • ${type}</span>
+                                <span>${tijd}</span>
                             </div>
-                            <span class="w-[38%] text-right text-xs font-black uppercase text-slate-800 leading-tight">${teamB}</span>
-                        </div>
-                    </div>`;
-            }
-        });
-        container.innerHTML = html;
-    }
-
-    function renderStanden(rows) {
-        const container = document.getElementById('standen');
-        let html = '';
-        
-        ["A", "B", "C"].forEach(poule => {
-            const teams = rows.filter(r => r[11] === poule);
-            if (teams.length === 0) return;
-
-            html += `
-                <div class="bg-white rounded-[2rem] shadow-lg overflow-hidden border border-slate-200">
-                    <div class="bg-green-900 text-white px-6 py-4 font-black italic uppercase text-xs tracking-widest">Poule ${poule}</div>
-                    <table class="w-full text-left font-bold text-xs italic">
-                        <thead class="bg-slate-50 text-[9px] uppercase text-slate-400 tracking-tighter">
-                            <tr>
-                                <th class="p-4 uppercase">Team</th>
-                                <th class="p-4 text-center">G</th>
-                                <th class="p-4 text-center text-green-950">Pnt</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">`;
-            
-            teams.forEach(r => {
-                html += `
-                    <tr class="hover:bg-green-50/50 transition-colors">
-                        <td class="p-4 uppercase text-slate-700 font-black">${r[12]}</td>
-                        <td class="p-4 text-center text-slate-400">${r[13]}</td>
-                        <td class="p-4 text-center font-black text-green-800 bg-green-50/50">${r[20]}</td>
-                    </tr>`;
+                            <div class="flex justify-between items-center px-2">
+                                <span class="w-[38%] text-[13px] font-black uppercase text-[#4a244d] leading-tight italic">${teamA}</span>
+                                <div class="bg-[#4a244d] text-[#c5a367] px-4 py-2 rounded-2xl font-black text-lg shadow-xl border-b-2 border-[#c5a367]/30 min-w-[75px] text-center">
+                                    ${displayScoreA}<span class="mx-1 opacity-30 text-white">:</span>${displayScoreB}
+                                </div>
+                                <span class="w-[38%] text-right text-[13px] font-black uppercase text-[#4a244d] leading-tight italic">${teamB}</span>
+                            </div>
+                        </div>`;
+                }
             });
-            html += `</tbody></table></div>`;
-        });
-        container.innerHTML = html;
-    }
+            container.innerHTML = html;
+        }
 
-    function openTab(id) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-btn'));
-        document.getElementById(id).classList.add('active');
-        document.getElementById('btn-' + id).classList.add('active-btn');
-    }
+        function renderStanden(rows) {
+            const container = document.getElementById('standen');
+            let html = '';
+            ["A", "B", "C"].forEach(poule => {
+                const teams = rows.filter(r => r[11] === poule);
+                if (teams.length === 0) return;
+                html += `
+                    <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100">
+                        <div class="purple-bg text-[#c5a367] px-8 py-5 font-black italic uppercase text-xs tracking-[0.2em] border-b-4 gold-border">Poule ${poule}</div>
+                        <table class="w-full text-left font-bold text-xs italic">
+                            <thead class="bg-slate-50 text-[9px] uppercase text-slate-400 tracking-widest">
+                                <tr><th class="px-8 py-4 uppercase">Team</th><th class="px-4 py-4 text-center">G</th><th class="px-8 py-4 text-center text-[#4a244d] font-black">Pnt</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">`;
+                teams.forEach(r => {
+                    html += `<tr class="hover:bg-slate-50/80 transition-colors"><td class="px-8 py-5 uppercase text-[#4a244d] font-black tracking-tighter">${r[12]}</td><td class="px-4 py-5 text-center text-slate-300 font-black">${r[13]}</td><td class="px-8 py-5 text-center font-black text-[#4a244d] bg-[#c5a367]/5 text-sm">${r[20]}</td></tr>`;
+                });
+                html += `</tbody></table></div>`;
+            });
+            container.innerHTML = html;
+        }
 
-    fetchData();
-    setInterval(fetchData, 15000); // We verversen nu elke 15 seconden voor snellere updates
-</script>
+        function openTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-btn'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('btn-' + id).classList.add('active-btn');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        fetchData();
+        setInterval(fetchData, 15000);
+    </script>
 </body>
 </html>
-
