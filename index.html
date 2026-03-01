@@ -34,16 +34,18 @@
         .purple-bg { background-color: var(--barakah-purple); }
         .gold-text { color: var(--barakah-gold); }
 
-        /* Social knoppen animatie */
         .social-btn { transition: transform 0.2s ease; }
         .social-btn:active { transform: scale(0.9); }
+        
+        /* Custom list style voor info */
+        .info-card li { position: relative; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        .info-card li::before { content: "•"; position: absolute; left: 0; color: var(--barakah-gold); font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header class="purple-bg text-white py-10 px-4 text-center border-b-4 gold-border shadow-2xl relative overflow-hidden">
         <div class="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-        
         <div class="relative flex flex-col items-center">
             <img src="logo.png" alt="Barakah Cup Logo" class="w-28 h-28 mb-4 object-contain drop-shadow-lg">
             <h1 class="text-3xl font-black italic uppercase tracking-widest gold-text">BARAKAH CUP '26</h1>
@@ -60,16 +62,48 @@
     </header>
 
     <nav class="sticky top-0 bg-white/95 backdrop-blur-md shadow-lg z-50 border-b gold-border/20">
-        <div class="flex justify-center space-x-3 p-4">
-            <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-6 py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 font-black text-[10px] uppercase transition-all duration-300">Programma</button>
-            <button id="btn-standen" onclick="openTab('standen')" class="px-6 py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 font-black text-[10px] uppercase transition-all duration-300">Standen</button>
+        <div class="flex justify-center space-x-2 p-4">
+            <button id="btn-schema" onclick="openTab('schema')" class="active-btn px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 font-black text-[10px] uppercase transition-all duration-300">Programma</button>
+            <button id="btn-standen" onclick="openTab('standen')" class="px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 font-black text-[10px] uppercase transition-all duration-300">Standen</button>
+            <button id="btn-info" onclick="openTab('info')" class="px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 font-black text-[10px] uppercase transition-all duration-300">Toernooi Info</button>
         </div>
     </nav>
 
     <main class="max-w-xl mx-auto p-4 pb-24">
         <div id="status-message" class="text-center py-10 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Update van Barakah Cup Cloud...</div>
+        
         <section id="schema" class="tab-content active space-y-4"></section>
+        
         <section id="standen" class="tab-content space-y-8"></section>
+
+        <section id="info" class="tab-content space-y-6">
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 info-card">
+                <h2 class="text-xl font-black italic uppercase gold-text mb-4 tracking-tighter">Wedstrijdreglement</h2>
+                <ul class="text-[13px] font-bold text-slate-600 leading-relaxed">
+                    <li>7 tegen 7 (6 spelers en 1 keeper).</li>
+                    <li>Wedstrijdduur: 20 minuten.</li>
+                    <li>De thuisploeg trapt af.</li>
+                    <li>Uitballen worden ingetrapt (geen directe goal mogelijk).</li>
+                    <li>Gele kaart: 3 minuten tijdstraf.</li>
+                    <li>Rode kaart: Veld verlaten, team speelt met man minder verder.</li>
+                    <li>Voetbalschoenen verplicht (natuur- of kunstgras).</li>
+                    <li>Shirt uittrekken bij juichen is verboden (leidt tot rode kaart).</li>
+                    <li class="text-red-600">3 minuten te laat als team = 1-0 achterstand (!)</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 info-card">
+                <h2 class="text-xl font-black italic uppercase gold-text mb-4 tracking-tighter">Mededelingen</h2>
+                <div class="space-y-4 text-[13px] font-bold text-slate-600 leading-relaxed">
+                    <p>Scores worden direct na de wedstrijd online en op het algemene scorebord verwerkt.</p>
+                    <p>Er zijn 4 kleedkamers beschikbaar. We zullen deze delen met andere teams om inshaAllah onze broederschapsbanden te versterken.</p>
+                    <p class="bg-amber-50 p-4 rounded-2xl border border-amber-100 text-amber-800">
+                        <strong>Let op:</strong> Kleedkamers worden niet afgesloten. Neem waardevolle spullen mee of laat ze niet onbeheerd achter in auto's.
+                    </p>
+                    <p>Het meenemen van eigen gebedskleden is aangeraden.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script>
@@ -89,7 +123,6 @@
                     fetchSource(schemaCsvUrl),
                     fetchSource(standenCsvUrl)
                 ]);
-
                 renderSchema(parseCSV(textSchema));
                 renderStanden(parseCSV(textStanden));
                 document.getElementById('status-message').style.display = 'none';
@@ -104,33 +137,14 @@
             const container = document.getElementById('schema');
             let html = '';
             const matches = rows.filter(r => r[0] && r[0].includes(':'));
-            
             matches.forEach(cols => {
                 const [tijd, veld, type, teamA, teamB, sA, sB, pauzeCheck] = cols;
                 if (pauzeCheck === "-") {
-                    html += `
-                        <div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border">
-                            <span class="block text-[9px] font-black gold-text uppercase tracking-[0.3em] mb-1 italic">Intermezzo</span>
-                            <span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span>
-                            <span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span>
-                        </div>`;
+                    html += `<div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border"><span class="block text-[9px] font-black gold-text uppercase tracking-[0.3em] mb-1 italic">Intermezzo</span><span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span><span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span></div>`;
                 } else {
                     const displayScoreA = (sA === "" || sA === undefined) ? "-" : sA;
                     const displayScoreB = (sB === "" || sB === undefined) ? "-" : sB;
-                    html += `
-                        <div class="bg-white p-5 rounded-[2.2rem] shadow-sm border-b-4 border-slate-200 border-x border-t border-slate-100">
-                            <div class="flex justify-between text-[10px] font-black text-slate-300 uppercase mb-4 tracking-widest">
-                                <span>Veld ${veld} • ${type}</span>
-                                <span>${tijd}</span>
-                            </div>
-                            <div class="flex justify-between items-center px-2">
-                                <span class="w-[38%] text-[13px] font-black uppercase text-[#4a244d] leading-tight italic">${teamA}</span>
-                                <div class="bg-[#4a244d] text-[#c5a367] px-4 py-2 rounded-2xl font-black text-lg shadow-xl border-b-2 border-[#c5a367]/30 min-w-[75px] text-center">
-                                    ${displayScoreA}<span class="mx-1 opacity-30 text-white">:</span>${displayScoreB}
-                                </div>
-                                <span class="w-[38%] text-right text-[13px] font-black uppercase text-[#4a244d] leading-tight italic">${teamB}</span>
-                            </div>
-                        </div>`;
+                    html += `<div class="bg-white p-5 rounded-[2.2rem] shadow-sm border-b-4 border-slate-200 border-x border-t border-slate-100"><div class="flex justify-between text-[10px] font-black text-slate-300 uppercase mb-4 tracking-widest"><span>Veld ${veld} • ${type}</span><span>${tijd}</span></div><div class="flex justify-between items-center px-2"><span class="w-[38%] text-[13px] font-black uppercase text-[#4a244d] leading-tight italic">${teamA}</span><div class="bg-[#4a244d] text-[#c5a367] px-4 py-2 rounded-2xl font-black text-lg shadow-xl border-b-2 border-[#c5a367]/30 min-w-[75px] text-center">${displayScoreA}<span class="mx-1 opacity-30 text-white">:</span>${displayScoreB}</div><span class="w-[38%] text-right text-[13px] font-black uppercase text-[#4a244d] leading-tight italic">${teamB}</span></div></div>`;
                 }
             });
             container.innerHTML = html;
@@ -142,14 +156,7 @@
             ["A", "B", "C"].forEach(poule => {
                 const teams = rows.filter(r => r[11] === poule);
                 if (teams.length === 0) return;
-                html += `
-                    <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100">
-                        <div class="purple-bg text-[#c5a367] px-8 py-5 font-black italic uppercase text-xs tracking-[0.2em] border-b-4 gold-border">Poule ${poule}</div>
-                        <table class="w-full text-left font-bold text-xs italic">
-                            <thead class="bg-slate-50 text-[9px] uppercase text-slate-400 tracking-widest">
-                                <tr><th class="px-8 py-4 uppercase">Team</th><th class="px-4 py-4 text-center">G</th><th class="px-8 py-4 text-center text-[#4a244d] font-black">Pnt</th></tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">`;
+                html += `<div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100"><div class="purple-bg text-[#c5a367] px-8 py-5 font-black italic uppercase text-xs tracking-[0.2em] border-b-4 gold-border">Poule ${poule}</div><table class="w-full text-left font-bold text-xs italic"><thead class="bg-slate-50 text-[9px] uppercase text-slate-400 tracking-widest"><tr><th class="px-8 py-4 uppercase">Team</th><th class="px-4 py-4 text-center">G</th><th class="px-8 py-4 text-center text-[#4a244d] font-black">Pnt</th></tr></thead><tbody class="divide-y divide-slate-100">`;
                 teams.forEach(r => {
                     html += `<tr class="hover:bg-slate-50/80 transition-colors"><td class="px-8 py-5 uppercase text-[#4a244d] font-black tracking-tighter">${r[12]}</td><td class="px-4 py-5 text-center text-slate-300 font-black">${r[13]}</td><td class="px-8 py-5 text-center font-black text-[#4a244d] bg-[#c5a367]/5 text-sm">${r[20]}</td></tr>`;
                 });
