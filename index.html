@@ -195,48 +195,29 @@
         }
 
         function renderStanden(rows) {
-            const container = document.getElementById('standen');
-            let html = '';
-            
-            ["A", "B", "C"].forEach(poule => {
-                const teams = rows.filter(r => r[11] === poule);
-                if (teams.length === 0) return;
+    const container = document.getElementById('standen');
+    let html = '';
+    
+    // We definiëren hier strikt de poules die we willen tonen
+    ["A", "B", "C"].forEach(poule => {
+        // FILTER: Alleen rijen waar kolom 11 EXACT overeenkomt met A, B of C
+        // En we checken of de teamnaam (kolom 12) niet leeg is
+        const teams = rows.filter(r => r[11] === poule && r[12] && r[12] !== "");
+        
+        if (teams.length === 0) return;
 
-                html += `
-                    <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100 mb-8">
-                        <div class="purple-bg text-[#c5a367] px-8 py-5 font-black italic uppercase text-xs tracking-[0.2em] border-b-4 gold-border flex justify-between items-center">
-                            <span>Poule ${poule}</span>
-                            <span class="text-[9px] opacity-60 normal-case font-bold text-white italic">Swipe voor details →</span>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left font-bold text-xs italic min-w-[450px]">
-                                <thead class="bg-slate-50 text-[9px] uppercase text-slate-400 tracking-widest">
-                                    <tr>
-                                        <th class="px-6 py-4 uppercase text-[#4a244d] sticky left-0 bg-slate-50 z-10">Team</th>
-                                        <th class="px-4 py-4 text-center text-[#4a244d] font-black bg-slate-100/50">Pnt</th>
-                                        <th class="px-3 py-4 text-center">G</th>
-                                        <th class="px-3 py-4 text-center">DV</th>
-                                        <th class="px-3 py-4 text-center">DT</th>
-                                        <th class="px-3 py-4 text-center">+/-</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">`;
-                
-                teams.forEach(r => {
-                    html += `
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="px-6 py-5 uppercase text-[#4a244d] font-black tracking-tighter sticky left-0 bg-white border-r border-slate-50 z-10">${r[12]}</td>
-                            <td class="px-4 py-5 text-center font-black text-[#4a244d] bg-[#c5a367]/10 text-sm italic">${r[20] || 0}</td>
-                            <td class="px-3 py-5 text-center text-slate-400 font-black">${r[13] || 0}</td>
-                            <td class="px-3 py-5 text-center text-slate-400">${r[17] || 0}</td>
-                            <td class="px-3 py-5 text-center text-slate-400">${r[18] || 0}</td>
-                            <td class="px-3 py-5 text-center text-slate-400">${r[19] || 0}</td>
-                        </tr>`;
-                });
-                html += `</tbody></table></div></div>`;
-            });
-            container.innerHTML = html;
-        }
+        // Sorteer de teams direct in de code op punten (kolom 20) en dan op doelsaldo (kolom 19)
+        // Zo staan de standen altijd goed, ongeacht de volgorde in de sheet
+        teams.sort((a, b) => {
+            const pntA = parseInt(a[20]) || 0;
+            const pntB = parseInt(b[20]) || 0;
+            if (pntB !== pntA) return pntB - pntA;
+            const dsA = parseInt(a[19]) || 0;
+            const dsB = parseInt(b[19]) || 0;
+            return dsB - dsA;
+        });
+
+        // ... rest van je bestaande HTML opbouw voor de tabel ...
 
         function openTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -251,6 +232,7 @@
     </script>
 </body>
 </html>
+
 
 
 
