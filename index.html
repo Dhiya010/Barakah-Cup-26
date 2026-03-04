@@ -112,18 +112,6 @@
                     <li class="text-red-600">3 minuten te laat als team = 1-0 achterstand (!)</li>
                 </ul>
             </div>
-
-            <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100 info-card">
-                <h2 class="text-xl font-black italic uppercase gold-text mb-4 tracking-tighter">Mededelingen</h2>
-                <div class="space-y-4 text-[13px] font-bold text-slate-600 leading-relaxed">
-                    <p>Scores worden direct na de wedstrijd online verwerkt.</p>
-                    <p>Er zijn 4 kleedkamers beschikbaar die we delen voor extra broederschap.</p>
-                    <p class="bg-amber-50 p-4 rounded-2xl border border-amber-100 text-amber-800 italic text-xs">
-                        <strong>Let op:</strong> Kleedkamers worden niet afgesloten. Neem waardevolle spullen mee.
-                    </p>
-                    <p>Het meenemen van eigen gebedskleden is aangeraden.</p>
-                </div>
-            </div>
         </section>
     </main>
 
@@ -131,8 +119,10 @@
         const schemaCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=1773508172&single=true&output=csv";
         const standenCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeHQmLpsAABDYuMjzT_3GLt9bquZ7y4fbFI6PWKeZK4HjGtPGoFzYU24tDyf82HngtMwpqbZ5lofng/pub?gid=100335345&single=true&output=csv";
 
+        let globalSchemaRows = [];
+
         async function fetchSource(url) {
-            const cacheBuster = `&t=${new Date().getTime()}_${Math.random().toString(36).substr(2, 9)}`;
+            const cacheBuster = `&t=${new Date().getTime()}`;
             const response = await fetch(url + cacheBuster);
             if (!response.ok) throw new Error('Netwerkfout');
             return await response.text();
@@ -141,7 +131,8 @@
         async function fetchData() {
             try {
                 const [textSchema, textStanden] = await Promise.all([fetchSource(schemaCsvUrl), fetchSource(standenCsvUrl)]);
-                renderSchema(parseCSV(textSchema));
+                globalSchemaRows = parseCSV(textSchema);
+                renderSchema(globalSchemaRows);
                 renderStanden(parseCSV(textStanden));
                 document.getElementById('status-message').style.display = 'none';
             } catch (err) { console.error(err); }
@@ -158,34 +149,12 @@
             
             matches.forEach(cols => {
                 const [tijd, veld, type, teamA, teamB, sA, sB, pauzeCheck] = cols;
-                
                 if (pauzeCheck === "-") {
-                    html += `
-                        <div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border">
-                            <span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span>
-                            <span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span>
-                        </div>`;
+                    html += `<div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border"><span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span><span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span></div>`;
                 } else {
                     const dSA = (sA === "" || sA === undefined) ? "-" : sA;
                     const dSB = (sB === "" || sB === undefined) ? "-" : sB;
-
-                    html += `
-                        <div class="bg-white p-5 rounded-[2.2rem] shadow-sm border-b-4 border-slate-200 border-x border-t border-slate-100">
-                            <div class="flex justify-between text-[11px] font-black uppercase mb-4 tracking-wider">
-                                <span class="text-[#22c55e] bg-green-50 px-3 py-1 rounded-full border border-green-100 italic">Veld ${veld} • ${type}</span>
-                                <span class="text-[#22c55e] flex items-center italic">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
-                                    ${tijd}
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center px-2">
-                                <span class="w-[38%] text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamA}</span>
-                                <div class="bg-[#4a244d] text-[#c5a367] px-4 py-2 rounded-2xl font-black text-lg shadow-xl border-b-2 border-[#c5a367]/30 min-w-[75px] text-center">
-                                    ${dSA}<span class="mx-1 opacity-30 text-white">:</span>${dSB}
-                                </div>
-                                <span class="w-[38%] text-right text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamB}</span>
-                            </div>
-                        </div>`;
+                    html += `<div class="bg-white p-5 rounded-[2.2rem] shadow-sm border-b-4 border-slate-200 border-x border-t border-slate-100"><div class="flex justify-between text-[11px] font-black uppercase mb-4 tracking-wider"><span class="text-[#22c55e] bg-green-50 px-3 py-1 rounded-full border border-green-100 italic">Veld ${veld} • ${type}</span><span class="text-[#22c55e] flex items-center italic"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>${tijd}</span></div><div class="flex justify-between items-center px-2"><span class="w-[38%] text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamA}</span><div class="bg-[#4a244d] text-[#c5a367] px-4 py-2 rounded-2xl font-black text-lg shadow-xl border-b-2 border-[#c5a367]/30 min-w-[75px] text-center">${dSA}<span class="mx-1 opacity-30 text-white">:</span>${dSB}</div><span class="w-[38%] text-right text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamB}</span></div></div>`;
                 }
             });
             container.innerHTML = html;
@@ -195,16 +164,18 @@
             const container = document.getElementById('standen');
             let html = '';
             
+            // Haal alle poulewedstrijden op uit het schema (waar veld 1, 2, 3 staat en GEEN pauze is)
+            const pouleMatches = globalSchemaRows.filter(r => r[0] && r[0].includes(':') && r[7] !== "-");
+
             ["A", "B", "C"].forEach(poule => {
-                // HIER IS DE FIX: Filter rijen op exacte poule-naam (kolom 11) en check of teamnaam (kolom 12) bestaat
-                const teams = rows.filter(r => r[11] === poule && r[12] && r[12].trim() !== "");
-                if (teams.length === 0) return;
+                const teamsInPoule = rows.filter(r => r[11] === poule && r[12] && r[12].trim() !== "");
+                if (teamsInPoule.length === 0) return;
 
                 html += `
                     <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100 mb-8">
                         <div class="purple-bg text-[#c5a367] px-8 py-5 font-black italic uppercase text-xs tracking-[0.2em] border-b-4 gold-border flex justify-between items-center">
                             <span>Poule ${poule}</span>
-                            <span class="text-[9px] opacity-60 normal-case font-bold text-white italic">Swipe voor details →</span>
+                            <span class="text-[9px] opacity-60 normal-case font-bold text-white italic">Live Berekening →</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left font-bold text-xs italic min-w-[450px]">
@@ -220,15 +191,35 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">`;
                 
-                teams.forEach(r => {
+                teamsInPoule.forEach(r => {
+                    const teamName = r[12];
+                    let pnt = 0, g = 0, dv = 0, dt = 0;
+
+                    // Loop door alle schema-wedstrijden en tel alleen op als de teamnaam voorkomt
+                    pouleMatches.forEach(m => {
+                        const sA = parseInt(m[5]);
+                        const sB = parseInt(m[6]);
+                        
+                        // Check of score is ingevuld
+                        if (!isNaN(sA) && !isNaN(sB)) {
+                            if (m[3] === teamName) { // Team is Team A
+                                g++; dv += sA; dt += sB;
+                                if (sA > sB) pnt += 3; else if (sA === sB) pnt += 1;
+                            } else if (m[4] === teamName) { // Team is Team B
+                                g++; dv += sB; dt += sA;
+                                if (sB > sA) pnt += 3; else if (sB === sA) pnt += 1;
+                            }
+                        }
+                    });
+
                     html += `
                         <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="px-6 py-5 uppercase text-[#4a244d] font-black tracking-tighter sticky left-0 bg-white border-r border-slate-50 z-10">${r[12]}</td>
-                            <td class="px-4 py-5 text-center font-black text-[#4a244d] bg-[#c5a367]/10 text-sm italic">${r[20] || 0}</td>
-                            <td class="px-3 py-5 text-center text-slate-400 font-black">${r[13] || 0}</td>
-                            <td class="px-3 py-5 text-center text-slate-400">${r[17] || 0}</td>
-                            <td class="px-3 py-5 text-center text-slate-400">${r[18] || 0}</td>
-                            <td class="px-3 py-5 text-center text-slate-400">${r[19] || 0}</td>
+                            <td class="px-6 py-5 uppercase text-[#4a244d] font-black tracking-tighter sticky left-0 bg-white border-r border-slate-50 z-10">${teamName}</td>
+                            <td class="px-4 py-5 text-center font-black text-[#4a244d] bg-[#c5a367]/10 text-sm italic">${pnt}</td>
+                            <td class="px-3 py-5 text-center text-slate-400 font-black">${g}</td>
+                            <td class="px-3 py-5 text-center text-slate-400">${dv}</td>
+                            <td class="px-3 py-5 text-center text-slate-400">${dt}</td>
+                            <td class="px-3 py-5 text-center text-slate-400">${dv - dt}</td>
                         </tr>`;
                 });
                 html += `</tbody></table></div></div>`;
