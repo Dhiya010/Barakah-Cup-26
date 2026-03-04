@@ -154,45 +154,59 @@
         }
 
         function renderSchema(rows) {
-            const container = document.getElementById('schema');
-            let html = '';
-            const matches = rows.filter(r => r[0] && r[0].includes(':'));
-            
-            matches.forEach(cols => {
-                const [tijd, veld, type, teamA, teamB, sA, sB, pauzeCheck] = cols;
-                
-                if (pauzeCheck === "-") {
-                    // Versie zonder "Intermezzo"
-                    html += `
-                        <div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border">
-                            <span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span>
-                            <span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span>
-                        </div>`;
-                } else {
-                    const dSA = (sA === "" || sA === undefined) ? "-" : sA;
-                    const dSB = (sB === "" || sB === undefined) ? "-" : sB;
+    const container = document.getElementById('schema');
+    let html = '';
+    const matches = rows.filter(r => r[0] && r[0].includes(':'));
+    
+    matches.forEach(cols => {
+        // Kolommen: 0:tijd, 1:veld, 2:type, 3:teamA, 4:teamB, 5:sA, 6:sB, 7:pauzeCheck, 8:penalties
+        const [tijd, veld, type, teamA, teamB, sA, sB, pauzeCheck, penalties] = cols;
+        
+        if (pauzeCheck === "-") {
+            html += `
+                <div class="bg-gradient-to-r from-[#4a244d] to-[#633268] p-6 rounded-[2rem] text-center shadow-lg border-2 gold-border">
+                    <span class="text-xl font-black text-white uppercase italic tracking-tighter">${type}</span>
+                    <span class="block text-[11px] font-bold gold-text mt-1 opacity-80">${tijd}</span>
+                </div>`;
+        } else {
+            const dSA = (sA === "" || sA === undefined) ? "-" : sA;
+            const dSB = (sB === "" || sB === undefined) ? "-" : sB;
 
-                    html += `
-                        <div class="bg-white p-5 rounded-[2.2rem] shadow-sm border-b-4 border-slate-200 border-x border-t border-slate-100">
-                            <div class="flex justify-between text-[11px] font-black uppercase mb-4 tracking-wider">
-                                <span class="text-[#22c55e] bg-green-50 px-3 py-1 rounded-full border border-green-100 italic">Veld ${veld} • ${type}</span>
-                                <span class="text-[#22c55e] flex items-center italic">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
-                                    ${tijd}
-                                </span>
+            // Logica voor penalties:
+            // 1. Het moet een gelijkspel zijn (en niet leeg/streepje)
+            // 2. Het type moet 'Kwartfinale', 'Halve Finale' of 'Finale' bevatten
+            const isGelijkspel = (dSA !== "-" && dSA === dSB);
+            const isKnockOut = /kwart|halve|finale/i.test(type);
+            
+            let penaltyHtml = "";
+            if (isGelijkspel && isKnockOut && penalties && penalties.trim() !== "") {
+                penaltyHtml = `<div class="flex justify-center"><span class="penalty-badge">${penalties}</span></div>`;
+            }
+
+            html += `
+                <div class="bg-white p-5 rounded-[2.2rem] shadow-sm border-b-4 border-slate-200 border-x border-t border-slate-100">
+                    <div class="flex justify-between text-[11px] font-black uppercase mb-4 tracking-wider">
+                        <span class="text-[#22c55e] bg-green-50 px-3 py-1 rounded-full border border-green-100 italic">Veld ${veld} • ${type}</span>
+                        <span class="text-[#22c55e] flex items-center italic">
+                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                            ${tijd}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center px-2">
+                        <span class="w-[38%] text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamA}</span>
+                        <div class="flex flex-col items-center min-w-[75px]">
+                            <div class="bg-[#4a244d] text-[#c5a367] px-4 py-2 rounded-2xl font-black text-lg shadow-xl border-b-2 border-[#c5a367]/30 text-center w-full">
+                                ${dSA}<span class="mx-1 opacity-30 text-white">:</span>${dSB}
                             </div>
-                            <div class="flex justify-between items-center px-2">
-                                <span class="w-[38%] text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamA}</span>
-                                <div class="bg-[#4a244d] text-[#c5a367] px-4 py-2 rounded-2xl font-black text-lg shadow-xl border-b-2 border-[#c5a367]/30 min-w-[75px] text-center">
-                                    ${dSA}<span class="mx-1 opacity-30 text-white">:</span>${dSB}
-                                </div>
-                                <span class="w-[38%] text-right text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamB}</span>
-                            </div>
-                        </div>`;
-                }
-            });
-            container.innerHTML = html;
+                        </div>
+                        <span class="w-[38%] text-right text-[14px] font-black uppercase text-[#4a244d] leading-tight italic tracking-tight">${teamB}</span>
+                    </div>
+                    ${penaltyHtml} 
+                </div>`;
         }
+    });
+    container.innerHTML = html;
+}
 
         function renderStanden(rows) {
             const container = document.getElementById('standen');
@@ -251,5 +265,6 @@
     </script>
 </body>
 </html>
+
 
 
